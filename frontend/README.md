@@ -1,4 +1,4 @@
-# React + Vite
+# Vite And React + Flask Project using Langchain (LEarnly) Learn From GPT 
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

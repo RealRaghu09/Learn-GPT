@@ -9,7 +9,7 @@ CORS(app)
 # Welcome Route
 @app.route('/' , methods=['GET'])
 def home():
-    return 'Welcome to the Flask API!'
+    return 'Welcome to the Learnly API!'
 
 
 # Experiment Route
