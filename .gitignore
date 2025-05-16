@@ -2,3 +2,5 @@
 /frontend/node_modules
 /backend/venv
 *.pyc
+/backend/Files
+.DS_Store

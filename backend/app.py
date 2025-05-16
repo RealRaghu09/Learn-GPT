@@ -4,6 +4,9 @@ from utils.Model import MyModel
 from utils.summariser import Summariser
 from utils.Quiz import Quiz
 from utils.chabot import Chatbot
+from utils.web_page_loader import CustomWebBaseLoader
+from utils.pdf_loader import PDFScanner
+from utils.chroma import VectorEmbedding
 app = Flask(__name__)
 CORS(app)
 # Welcome Route
@@ -55,7 +58,43 @@ def Chat():
         return {'message': 'Data received Sucessfull' , 'response': response}
     except Exception as e:
         return {'message': str(e) , 'response': str(e)}
+#web Loader Route 
+@app.route('/generate/webloader' , methods=['POST'])
+def generate_webloader():
+    try:
+        data = request.get_json()
+        llm = CustomWebBaseLoader()
+        response = llm.get_response(url = data['content'])
+        return {'message': 'Data received Sucessfull' , 'response': (response)}
+    except Exception as e:
+        return {'message': str(e) , 'response': str(e)}
+# PDF Loader Route
+@app.route('/load_pdf' , methods=['POST'])
+def load_pdf():
+    try :
+        data = request.get_json()
+        print("Data received")
+        pdf = PDFScanner()
+        response = pdf.LoadPDF(data['content'])
+        return {'message': 'Data received Sucessfull' , 'response': (response)}
+    except Exception as e:
+        return {'message': str(e) , 'response': str(e)}
+    
+# Not Working Route
+@app.route('/load_pdf/ask', methods=['POST'])
+def load_pdf_ask():
+    try:
+        data = request.get_json()
+        pdf = PDFScanner()
+        pdf_text = pdf.LoadPDF(url=data['content'])
+        llm = VectorEmbedding()
+        llm.insert_documents(documents=pdf_text)
+        response = llm.query_documents(data['question'])
+        return {'message': 'Data received Sucessfull' , 'response': (response)}
+    except Exception as e:
+        return {'message': str(e) , 'response': f'yo {str(e)}'}
     
 
+    
 if __name__ == '__main__':
     app.run(debug=True , port=8000)
