@@ -1,12 +1,13 @@
-import React, { useState ,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import './InputArea.css'
+import { useData } from '../context/DataContext'
 
 export default function InputArea() {
   const [pdfLink, setPdfLink] = useState('');
   const [context, setContext] = useState('');
   const [linkError, setLinkError] = useState('');
   const [result, setResult] = useState(null);
-  const [finalData, setFinalData] = useState("");
+  const { finalData, setFinalData } = useData();
   const [pdf_data, setPdf_data] = useState("");
 
   const validatePdfLink = (link) => {
@@ -72,7 +73,7 @@ export default function InputArea() {
       setPdf_data(responseData.response);
       const newFinalData = responseData.response || context;
       setFinalData(newFinalData);
-      console.log("Final Data:", newFinalData, "Source:", responseData.response ? "PDF" : "Context");
+      console.log("Final Data:", finalData, "Source:", responseData.response ? "PDF" : "Context");
       
     } catch (error) {
       console.error('Error:', error);
@@ -102,7 +103,7 @@ const handleContextSubmit = async () => {
       setResult(responseData);
       const newFinalData = pdf_data || context;
       setFinalData(newFinalData);
-      console.log("Final Data:", newFinalData, "Source:", pdf_data ? "PDF" : "Context");
+      console.log("Final Data:", responseData, "Source:", pdf_data ? "PDF" : "Context");
       
     } catch (error) {
       console.error('Error:', error);

@@ -3,16 +3,19 @@ import './App.css'
 import Navbar from './components/Navbar'
 import InputArea from './components/InputArea'
 import ActionButtons from './components/ActionButtons'
+import { DataProvider } from './context/DataContext'
 
 function App() {
   return (
-    <div className="app-container">
-      <Navbar />
-      <div className="main-content">
-        <InputArea />
-        <ActionButtons />
+    <DataProvider>
+      <div className="app-container">
+        <Navbar />
+        <div className="main-content">
+          <InputArea />
+          <ActionButtons />
+        </div>
       </div>
-    </div>
+    </DataProvider>
   )
 }
 
