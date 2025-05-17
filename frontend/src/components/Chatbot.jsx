@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import './Chatbot.css';
-
+import {useData} from '../context/DataContext'
 export default function Chatbot() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const {finalData} = useData()
 
   const handleSend = async (e) => {
     e.preventDefault();

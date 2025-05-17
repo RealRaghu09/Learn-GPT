@@ -59,7 +59,8 @@ class Quiz:
             Final = chain.invoke({"content": content, "level": level})  
             
             print(Final)
-            return str(Final)
+            json_str = json.dumps(Final)
+            return str(json_str)
         except Exception as e:
                 return (f"Error in Quiz Generation: {str(e)}")
             

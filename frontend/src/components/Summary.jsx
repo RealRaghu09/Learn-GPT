@@ -4,12 +4,12 @@ import { useData } from '../context/DataContext';
 export default function Summary() {
   const {finalData} = useData();
   const [summary, setSummary] = useState(''); // Add state for summary
-
+  
   const handleButtonClick = async (action) => {
     console.log(`${action} button clicked`);
     let size = action // for Sending json
     // console.log(size)
-    console.log(finalData.response)
+    console.log(finalData)
     if (!finalData) {
       console.log('Please provide a Context');
       return;
