@@ -5,6 +5,9 @@ export default function InputArea() {
   const [pdfLink, setPdfLink] = useState('');
   const [context, setContext] = useState('');
   const [linkError, setLinkError] = useState('');
+  const [result, setResult] = useState(null);
+  const [finalData, setFinalData] = useState("");
+  const [pdf_data, setPdf_data] = useState("");
 
   const validatePdfLink = (link) => {
     if (!link) return true;
@@ -40,18 +43,20 @@ export default function InputArea() {
     setContext(e.target.value);
   };
 
-  const handleSubmit = async () => {
-    if (!pdfLink && !context) {
-      setLinkError('Please provide either a PDF link or context');
+    const handleSubmit = async () => {
+    if (!pdfLink) {
+      setLinkError('Please provide a PDF link');
       return;
     }
 
-    if (pdfLink && !validatePdfLink(pdfLink)) {
+    if (!validatePdfLink(pdfLink)) {
       return;
     }
-    console.log('PDF Link:', pdfLink);
-    console.log('Context:', context);
-    const data = { "content": pdfLink, "type": "pdf" };
+
+    const data = {
+      "content": pdfLink,
+      "type": "pdf"
+    };
 
     try {
       const res = await fetch('http://localhost:8000/load_pdf', {
@@ -61,16 +66,48 @@ export default function InputArea() {
         },
         body: JSON.stringify(data),
       });
-
-      const result = await res.json();
-      // setResponse(JSON.stringify(result));
-      console.log(result.message)
+    
+      const responseData = await res.json();
+      setResult(responseData);
+      setPdf_data(responseData.response);
+      const newFinalData = responseData.response || context;
+      setFinalData(newFinalData);
+      console.log("Final Data:", newFinalData, "Source:", responseData.response ? "PDF" : "Context");
       
     } catch (error) {
       console.error('Error:', error);
     }
+};
+const handleContextSubmit = async () => {
+  if (!context) {
+    setLinkError('Please provide context');
+    return;
+  }
+  
+  const data = { 
+    "content": context, 
+    "type": "text" 
   };
   
+  try {
+      const res = await fetch('http://localhost:8000/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+      });
+    
+      const responseData = await res.json();
+      setResult(responseData);
+      const newFinalData = pdf_data || context;
+      setFinalData(newFinalData);
+      console.log("Final Data:", newFinalData, "Source:", pdf_data ? "PDF" : "Context");
+      
+    } catch (error) {
+      console.error('Error:', error);
+    }
+};
 
   return (
     <div className="input-container">
@@ -86,6 +123,13 @@ export default function InputArea() {
         />
         {linkError && <span className="error-message">{linkError}</span>}
       </div>
+      <button 
+      className='submit-response'
+      onClick={handleSubmit}
+      disabled={result !== null}
+    >
+      {result ? 'Submitted' : 'Submit'}
+    </button>
       <div className="separator">
         <span>OR</span>
       </div>
@@ -99,11 +143,12 @@ export default function InputArea() {
         onChange={handleContextChange}
       />
       <button 
-        className='submit-response'
-        onClick={handleSubmit}
-      >
-        Submit
-      </button>
+      className='submit-response'
+      onClick={handleContextSubmit}
+      disabled={result !== null}
+    >
+      {result ? 'Submitted' : 'Context submit'}
+    </button>
     </div>
   )
 }
