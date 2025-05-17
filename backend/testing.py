@@ -8,12 +8,11 @@ from utils.web_page_loader import CustomWebBaseLoader
 from utils.pdf_loader import PDFScanner
 from utils.chroma import VectorEmbedding
 app = Flask(__name__)
-CORS(app,resources={r"/*": {"origins": "*"}})
+CORS(app)
 # Welcome Route
-@app.route('/' , methods=['POST'])
+@app.route('/' , methods=['GET'])
 def home():
-    data = request.get_json()
-    return {"message":'Welcome to the Learnly API!'}
+    return 'Welcome to the Learnly API!'
 
 
 # Experiment Route
@@ -55,7 +54,8 @@ def Chat():
     try:
         data = request.get_json()
         llm = Chatbot()
-        response = llm.generate_response(question=data['content'])
+        
+        response = llm.generate_response(question=data['content'] , context=)
         return {'message': 'Data received Sucessfull' , 'response': response}
     except Exception as e:
         return {'message': str(e) , 'response': str(e)}
@@ -77,7 +77,7 @@ def load_pdf():
         print("Data received")
         pdf = PDFScanner()
         response = pdf.LoadPDF(data['content'])
-        return {'message': 'Data received Sucessfull' , 'response': str(response)}
+        return {'message': 'Data received Sucessfull' , 'response': (response)}
     except Exception as e:
         return {'message': str(e) , 'response': str(e)}
     

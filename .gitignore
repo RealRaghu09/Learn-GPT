@@ -4,3 +4,5 @@
 *.pyc
 /backend/Files
 .DS_Store
+.gitignore
+/frontend/.gitignore

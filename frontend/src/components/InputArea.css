@@ -12,7 +12,21 @@
   gap: 20px;
 }
 
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
 
+.input-field.error {
+  border-color: #dc3545;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
 .input-field {
   width: 100%;
   padding: 10px;
