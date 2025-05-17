@@ -55,7 +55,7 @@ def Chat():
     try:
         data = request.get_json()
         llm = Chatbot()
-        response = llm.generate_response(question=data['content'])
+        response = llm.generate_response(question=data['question'] , context=data['context'])
         return {'message': 'Data received Sucessfull' , 'response': response}
     except Exception as e:
         return {'message': str(e) , 'response': str(e)}

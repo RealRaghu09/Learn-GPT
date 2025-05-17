@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect } from 'react';
 import './Chatbot.css';
 import {useData} from '../context/DataContext'
 export default function Chatbot() {
@@ -6,6 +6,60 @@ export default function Chatbot() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const {finalData} = useData()
+  const handleButtonClick = async (action) => {
+    console.log(`${action} button clicked`);
+    let size = action // for Sending json
+    // console.log(size)
+    console.log(finalData)
+    if (!finalData) {
+      console.log('Please provide a Context');
+      return;
+    }
+  
+    
+  
+    const data = {
+      "question":question,
+      "context": finalData
+    };
+  
+    try {
+      const res = await fetch('http://localhost:8000/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+      });
+    
+      const responseData = await res.json();
+      const responseContent = responseData['response']
+      setSummary(responseContent)
+      console.log("Final Summary ",responseContent)
+      
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const formatResponse = (text) => {
+    // Remove any leading/trailing whitespace
+    let formatted = text.trim();
+    
+    // Replace multiple spaces with single space
+    formatted = formatted.replace(/\s+/g, ' ');
+    
+    // Remove any special characters at the start/end
+    formatted = formatted.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '');
+    
+    // Add proper spacing after punctuation
+    formatted = formatted.replace(/([.,!?])([a-zA-Z])/g, '$1 $2');
+    
+    // Capitalize first letter of each sentence
+    formatted = formatted.replace(/(^|[.!?]\s+)([a-z])/g, (match, p1, p2) => p1 + p2.toUpperCase());
+    
+    return formatted;
+  };
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -17,12 +71,37 @@ export default function Chatbot() {
     setInput('');
     setIsLoading(true);
 
-    // Simulate bot response (replace with actual API call)
-    setTimeout(() => {
-      const botMessage = { text: `I received your message: "${input}"`, sender: 'bot' };
+    try {
+      const data = {
+        "question": input,
+        "context": finalData
+      };
+
+      const res = await fetch('http://localhost:8000/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+      });
+    
+      const responseData = await res.json();
+      const responseContent = responseData['response'];
+      
+      // Format the response before displaying
+      const formattedResponse = formatResponse(responseContent);
+      
+      // Add bot response
+      const botMessage = { text: formattedResponse, sender: 'bot' };
       setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Error:', error);
+      // Add error message
+      const errorMessage = { text: "Sorry, I encountered an error. Please try again.", sender: 'bot' };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
