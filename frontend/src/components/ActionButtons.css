@@ -10,6 +10,7 @@
   gap: 20px;
   justify-content: center;
   align-items: center;
+  background-color: #2E2E2E;
 }
 
 .action-button {
@@ -17,7 +18,8 @@
   padding: 15px 30px;
   border: none;
   border-radius: 8px;
-  background-color: #007bff;
+  /* background-color: #007bff; */
+  background-color: #0F4C5C;
   color: white;
   font-size: 16px;
   cursor: pointer;
@@ -26,7 +28,7 @@
 }
 
 .action-button:hover {
-  background-color: #0056b3;
+  background-color: #5DA7A3;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

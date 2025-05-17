@@ -133,7 +133,7 @@ export default function Quiz() {
   if (!difficulty) {
     return (
       <div className="quiz-container flex">
-        <h2>Select Difficulty Level</h2>
+        <h2 className="Title">Select Difficulty Level</h2>
         <div className="difficulty-buttons">
           <button onClick={() => fetchQuestions('easy')} className="difficulty-button">
             Easy
@@ -160,7 +160,7 @@ export default function Quiz() {
 
   return (
     <div className="quiz-container flex">
-      <div>
+      <div className='scoreTitle'>
         <span>
           Score: {currentScore}
         </span>
