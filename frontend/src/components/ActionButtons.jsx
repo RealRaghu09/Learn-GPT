@@ -21,7 +21,7 @@ export default function ActionButtons() {
 
   // Render the active component or buttons
   return (
-    <div className="action-buttons-container">
+    <div className="action-buttons-container ">
       {!activeComponent ? (
         <>
           <button className="action-button" onClick={handleClick_for_Quiz}>

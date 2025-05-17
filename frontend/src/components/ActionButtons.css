@@ -1,5 +1,5 @@
 .action-buttons-container {
-   position: fixed;
+   position:absolute;
   right: 0;
   top: 60px;
   width: 70%;

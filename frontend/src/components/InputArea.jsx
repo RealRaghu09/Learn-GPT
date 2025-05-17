@@ -15,13 +15,13 @@ export default function InputArea() {
         <span>OR</span>
       </div>
       <textarea 
-        name="InputContext" 
+        name="InputContext"
         id="InputContext" 
         className="textarea-field"
         placeholder='Context'
         rows="6"
       />
-      
+      <button className='submit-response'>Submit</button>
     </div>
   )
 }
