@@ -5,19 +5,26 @@ import Summary from './Summary.jsx'
 import Chatbot from './Chatbot.jsx'
 
 export default function ActionButtons() {
-  const [activeComponent, setActiveComponent] = useState(null)
+  // Use a stack to keep track of navigation history
+  const [componentStack, setComponentStack] = useState([])
 
   const handleClick_for_Quiz = () => {
-    setActiveComponent('quiz')
+    setComponentStack((prev) => [...prev, 'quiz'])
   }
 
   const handleClick_for_Summary = () => {
-    setActiveComponent('summary')
+    setComponentStack((prev) => [...prev, 'summary'])
   }
 
   const handleClick_for_Chatbot = () => {
-    setActiveComponent('chatbot')
+    setComponentStack((prev) => [...prev, 'chatbot'])
   }
+
+  const handleBack = () => {
+    setComponentStack((prev) => prev.slice(0, -1))
+  }
+
+  const activeComponent = componentStack[componentStack.length - 1] || null
 
   // Render the active component or buttons
   return (
@@ -35,12 +42,17 @@ export default function ActionButtons() {
           </button>
         </>
       ) : (
-        // Render the selected component
-        {
-          'quiz': <Quiz />,
-          'summary': <Summary />,
-          'chatbot': <Chatbot />
-        }[activeComponent]
+        <>
+          <button className="action-button back-button" onClick={handleBack} style={{width:40 , justifyContent:'center', alignItems:'center' , display:'inline-flex'
+    }}>
+            Back
+          </button>
+          {{
+            'quiz': <Quiz />,
+            'summary': <Summary />,
+            'chatbot': <Chatbot />
+          }[activeComponent]}
+        </>
       )}
     </div>
   )
