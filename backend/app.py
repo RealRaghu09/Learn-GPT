@@ -7,6 +7,7 @@ from utils.chabot import Chatbot
 from utils.web_page_loader import CustomWebBaseLoader
 from utils.pdf_loader import PDFScanner
 from utils.chroma import VectorEmbedding
+import fitz
 app = Flask(__name__)
 CORS(app,resources={r"/*": {"origins": "*"}})
 # Welcome Route
@@ -95,7 +96,15 @@ def load_pdf_ask():
     except Exception as e:
         return {'message': str(e) , 'response': f'yo {str(e)}'}
     
+@app.route('/upload', methods=['POST'])
+def upload_pdf():
+    file = request.files['pdf']
+    doc = fitz.open(stream=file.read(), filetype="pdf")
+    text = ""
+    for page in doc:
+        text += page.get_text()
 
+    return jsonify({'text': text})
     
 if __name__ == '__main__':
     app.run(debug=True , port=8000)

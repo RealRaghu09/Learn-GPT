@@ -77,3 +77,16 @@
   left: 0;
   z-index: 0;
 }
+.file-upload{
+  color: white;
+  display: flex; 
+   justify-content: center;
+}
+.upload-status{
+  color: white;
+}
+.file-input{
+border-radius: 13px;
+color: white;
+background-color: #0F4C5C;
+}

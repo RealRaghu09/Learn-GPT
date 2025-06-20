@@ -9,6 +9,7 @@ export default function InputArea() {
   const [result, setResult] = useState(null);
   const { finalData, setFinalData } = useData();
   const [pdf_data, setPdf_data] = useState("");
+  const [uploadStatus, setUploadStatus] = useState('');
 
   const validatePdfLink = (link) => {
     if (!link) return true;
@@ -109,6 +110,28 @@ const handleContextSubmit = async () => {
       console.error('Error:', error);
     }
 };
+const handleUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  setUploadStatus('Uploading...');
+  const formData = new FormData();
+  formData.append("pdf", file);
+
+  try {
+    const response = await fetch("http://localhost:8000/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    console.log("Extracted text:", result.text);
+    setUploadStatus('Done!');
+    setFinalData(result.text || '');
+  } catch (error) {
+    setUploadStatus('Error uploading PDF');
+    console.error('Upload error:', error);
+  }
+};
 
   return (
     <div className="input-container">
@@ -150,6 +173,13 @@ const handleContextSubmit = async () => {
     >
       {result ? 'Submitted' : 'Context submit'}
     </button>
+    <div className="separator">
+        <span>OR</span>
+      </div>
+      <div className='file-upload'>
+      <input type="file" accept="application/pdf" onChange={handleUpload} className='file-input' />
+      </div>
+      {uploadStatus && <div className="upload-status">{uploadStatus}</div>}
     </div>
   )
 }
