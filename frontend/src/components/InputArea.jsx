@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './InputArea.css'
 import { useData } from '../context/DataContext'
+import { API_ENDPOINTS } from '../config/api'
 
 export default function InputArea() {
   const [pdfLink, setPdfLink] = useState('');
@@ -61,7 +62,7 @@ export default function InputArea() {
     };
 
     try {
-      const res = await fetch('http://localhost:8000/load_pdf', {
+      const res = await fetch(API_ENDPOINTS.LOAD_PDF, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -92,7 +93,7 @@ const handleContextSubmit = async () => {
   };
   
   try {
-      const res = await fetch('http://localhost:8000/', {
+      const res = await fetch(API_ENDPOINTS.ROOT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -118,7 +119,7 @@ const handleUpload = async (e) => {
   formData.append("pdf", file);
 
   try {
-    const response = await fetch("http://localhost:8000/upload", {
+    const response = await fetch(API_ENDPOINTS.UPLOAD, {
       method: "POST",
       body: formData,
     });

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Chatbot.css';
 import { useData } from '../context/DataContext'
+import { API_ENDPOINTS } from '../config/api'
 
 export default function Chatbot() {
   const userSectionRef = useRef(null);
@@ -27,15 +28,13 @@ export default function Chatbot() {
       return;
     }
 
-
-
     const data = {
       "question": question,
       "context": finalData
     };
 
     try {
-      const res = await fetch('http://localhost:8000/chat', {
+      const res = await fetch(API_ENDPOINTS.CHAT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -88,7 +87,7 @@ export default function Chatbot() {
         "context": finalData
       };
 
-      const res = await fetch('http://localhost:8000/chat', {
+      const res = await fetch(API_ENDPOINTS.CHAT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

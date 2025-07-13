@@ -1,6 +1,8 @@
 import React ,{useEffect , useState} from 'react';
 import './Summary.css';
 import { useData } from '../context/DataContext';
+import { API_ENDPOINTS } from '../config/api';
+
 export default function Summary() {
   const {finalData} = useData();
   const [summary, setSummary] = useState(''); // Add state for summary
@@ -15,15 +17,13 @@ export default function Summary() {
       return;
     }
   
-    
-  
     const data = {
       "content":finalData,
       "size": size
     };
   
     try {
-      const res = await fetch('http://localhost:8000/generate/summarise', {
+      const res = await fetch(API_ENDPOINTS.SUMMARIZE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './Quiz.css'
 import { useData } from '../context/DataContext'
+import { API_ENDPOINTS } from '../config/api'
 
 export default function Quiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -22,8 +23,7 @@ export default function Quiz() {
         content: finalData,
         level: difficultyLevel
       })
-
-      const response = await fetch('http://localhost:8000/generate/quiz', {
+      const response = await fetch(API_ENDPOINTS.QUIZ, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
