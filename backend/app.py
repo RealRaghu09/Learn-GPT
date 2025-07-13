@@ -8,13 +8,21 @@ from utils.web_page_loader import CustomWebBaseLoader
 from utils.pdf_loader import PDFScanner
 from utils.chroma import VectorEmbedding
 import fitz
+import os
+
 app = Flask(__name__)
 CORS(app,resources={r"/*": {"origins": "*"}})
+
 # Welcome Route
 @app.route('/' , methods=['POST'])
 def home():
     data = request.get_json()
     return {"message":'Welcome to the Learnly API!'}
+
+# Health check route for Render
+@app.route('/health', methods=['GET'])
+def health_check():
+    return {"status": "healthy", "message": "Learnly API is running"}
 
 
 # Experiment Route
@@ -105,4 +113,9 @@ def upload_pdf():
         text += page.get_text()
 
     return jsonify({'text': text})
+    
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
     
