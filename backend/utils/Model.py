@@ -5,7 +5,7 @@ class MyModel :
     model = None
     def __init__(self):
         load_dotenv()
-        self.model = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+        self.model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
     
     def generate(self , structured_prompt:str ) -> str:
         try:

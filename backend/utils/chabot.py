@@ -6,7 +6,7 @@ from langchain_core.output_parsers import StrOutputParser
 class Chatbot:
     def __init__(self):
         load_dotenv()
-        self.Model = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+        self.Model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
         
         self.parser = StrOutputParser()
     def generate_response(self,context:str, question: str) -> str:

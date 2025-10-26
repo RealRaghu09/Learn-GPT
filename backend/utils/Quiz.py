@@ -7,7 +7,7 @@ import json
 class Quiz:
     def __init__(self):
         load_dotenv()
-        self.Model = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+        self.Model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
         self.schema = [
             ResponseSchema(name='question_1', description='Question 1 of the content'),
             ResponseSchema(name='question_1_option_1', description='Question 1 option 1'),

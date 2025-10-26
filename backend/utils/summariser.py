@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 class Summariser:
     def __init__(self):
         load_dotenv()
-        self.model = ChatGoogleGenerativeAI(model = 'gemini-1.5-flash')
+        self.model = ChatGoogleGenerativeAI(model = 'gemini-2.0-flash')
         self.template = PromptTemplate(
             template='summarize the following text to {size} words :\n\n {text}',
             input_variables=['text', 'size']
