@@ -2,7 +2,7 @@
 link : [LEARN-GPT](https://learn-gpt-sigma.vercel.app/)
 this is the Webpage is built on top of Vite + React with JS Serving as Frontend and Flask as Backend with use of Langchain and RAG , I have built the application that takes a input either the pdf link or the content  sent to the RAG to create the vector Embeddings and 
 to Provide accurate Answers to the User from the Given Contexts
-
+[Demo Video](https://youtu.be/VWLOmBM-kSo)
 ## Tech Stack 
 --- Vite + React (Frontend)  - JavaScript
 --- Flask (Backend) - Python
