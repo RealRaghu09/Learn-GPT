@@ -1,4 +1,4 @@
-from flask import Flask  , jsonify , request
+from flask import Flask  , jsonify , request , make_response
 from flask_cors import CORS
 from utils.Model import MyModel
 from utils.summariser import Summariser
@@ -17,12 +17,14 @@ CORS(app,resources={r"/*": {"origins": "*"}})
 @app.route('/' , methods=['POST'])
 def home():
     data = request.get_json()
-    return {"message":'Welcome to the Learnly API!'}
+    response =  make_response(jsonify({"message":'Welcome to the Learnly API!'}) , 200)
+    return response
 
 # Health check route for Render
 @app.route('/health', methods=['GET'])
 def health_check():
-    return {"status": "healthy", "message": "Learnly API is running"}
+    response =  make_response(jsonify({"status": "healthy", "message": "Learnly API is running"}) , 200)
+    return response
 
 
 # Experiment Route
@@ -32,9 +34,11 @@ def generate():
         data = request.get_json()
         llm = MyModel()
         print("received data: ", data['content'])
-        return {"message":"Data received Sucessfull",'response': llm.generate(structured_prompt=data['content'])}
+        response =  make_response(jsonify({"message":"Data received Sucessfull",'response': llm.generate(structured_prompt=data['content'])}) , 200)
+        return response
     except Exception as e:
-        return {'message': str(e) , 'response': str(e)}
+        response =  make_response(jsonify({'message': str(e) , 'response': str(e)}) , 500)
+        return response
     
 # Summarise Route
 @app.route('/generate/summarise' , methods=['POST'])
@@ -43,9 +47,11 @@ def generate_summarise():
         data = request.get_json()
         llm = Summariser()
         response = llm.generate(text=data['content'] , size=data['size'])
-        return {"message":"Data received Sucessfull",'response': response}
+        response =  make_response(jsonify({"message":"Data received Sucessfull",'response': response}) , 200)
+        return response
     except Exception as e:
-        return {'message': str(e) , 'response': str(e)}
+        response =  make_response(jsonify({'message': str(e) , 'response': str(e)}) , 500)
+        return response
 
 # Quiz Route 
 @app.route('/generate/quiz' , methods=['POST'])
@@ -54,9 +60,11 @@ def generate_quiz():
         data = request.get_json()
         llm = Quiz()
         response = llm.generate_quiz(content=data['content'] , level=data['level'])
-        return {'message' : 'Data received Sucessfull' , 'response': response}
+        response =  make_response(jsonify({'message' : 'Data received Sucessfull' , 'response': response}) , 200)
+        return response
     except Exception as e:
-        return { "message": str(e) , 'response': str(e)}
+        response =  make_response(jsonify({ "message": str(e) , 'response': str(e)}) , 500)
+        return response
 
 # Chatbot Route
 @app.route('/chat' , methods=['POST'])
@@ -65,9 +73,11 @@ def Chat():
         data = request.get_json()
         llm = Chatbot()
         response = llm.generate_response(question=data['question'] , context=data['context'])
-        return {'message': 'Data received Sucessfull' , 'response': response}
+        response =  make_response(jsonify({'message': 'Data received Sucessfull' , 'response': response}) , 200)
+        return response
     except Exception as e:
-        return {'message': str(e) , 'response': str(e)}
+        response =  make_response(jsonify({'message': str(e) , 'response': str(e)}) , 500)
+        return response
 #web Loader Route 
 @app.route('/generate/webloader' , methods=['POST'])
 def generate_webloader():
@@ -75,9 +85,11 @@ def generate_webloader():
         data = request.get_json()
         llm = CustomWebBaseLoader()
         response = llm.get_response(url = data['content'])
-        return {'message': 'Data received Sucessfull' , 'response': (response)}
+        response =  make_response(jsonify({'message': 'Data received Sucessfull' , 'response': (response)}) , 200)
+        return response
     except Exception as e:
-        return {'message': str(e) , 'response': str(e)}
+        response =  make_response(jsonify({'message': str(e) , 'response': str(e)}) , 500)
+        return response
 # PDF Loader Route
 @app.route('/load_pdf' , methods=['POST'])
 def load_pdf():
@@ -86,9 +98,11 @@ def load_pdf():
         print("Data received")
         pdf = PDFScanner()
         response = pdf.LoadPDF(data['content'])
-        return {'message': 'Data received Sucessfull' , 'response': str(response)}
+        response =  make_response(jsonify({'message': 'Data received Sucessfull' , 'response': str(response)}) , 200)
+        return response
     except Exception as e:
-        return {'message': str(e) , 'response': str(e)}
+        response =  make_response(jsonify({'message': str(e) , 'response': str(e)}) , 500)
+        return response
     
 # Not Working Route
 @app.route('/load_pdf/ask', methods=['POST'])
@@ -100,9 +114,11 @@ def load_pdf_ask():
         llm = VectorEmbedding()
         llm.insert_documents(documents=pdf_text)
         response = llm.query_documents(data['question'])
-        return {'message': 'Data received Sucessfull' , 'response': (response)}
+        response =  make_response(jsonify({'message': 'Data received Sucessfull' , 'response': (response)}) , 200)
+        return response
     except Exception as e:
-        return {'message': str(e) , 'response': f'yo {str(e)}'}
+        response =  make_response(jsonify({'message': str(e) , 'response': f'you got a error:  {str(e)}'}) , 500)
+        return response
     
 @app.route('/upload', methods=['POST'])
 def upload_pdf():
@@ -112,7 +128,8 @@ def upload_pdf():
     for page in doc:
         text += page.get_text()
 
-    return jsonify({'text': text})
+    response =  make_response(jsonify({'text': text}) , 200)
+    return response
     
 
 if __name__ == '__main__':
