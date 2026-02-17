@@ -1,0 +1,8 @@
+add Caching 
+add rate Limiter (in Frontend) Dont compilcate BE
+add Cache LLM Response 
+add Logs (Human ,System Message and AI Response)
+add Auth in Frontend(Firebase or Clerk)
+CREATE A  Agentic WorkFlow 
+create a thread to interact to RAG FAISS 
+? Create a Session Chat 
