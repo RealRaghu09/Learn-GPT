@@ -48,11 +48,7 @@ class Quiz:
             input_variables=["topic", "level"],
             partial_variables={"format": self.parser.get_format_instructions()},
         )
-# prompt = template.invoke({"topic": "Tiger"})
 
-# Result = Model.invoke(prompt)
-# Final_result = parser.parse(Result.content)
-# print(Final_result)
     def generate_quiz(self,content:str , level:str):
         try:
             chain = self.template | self.Model | self.parser

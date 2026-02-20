@@ -24,33 +24,3 @@ class VectorEmbedding:
             return str(response.page_content)
         except Exception as e:
             return str(e)
-# load_dotenv()
-
-
-# embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
-
-# DocumentList = [
-#     Document(page_content="hello world"),
-#     Document(page_content="Hey Google"),
-#     Document(page_content="hello Alexa"),
-#     Document(page_content="Hello siri")
-# ]
-
-
-# vectorstore = Chroma.from_documents(
-#     documents=DocumentList,
-#     embedding=embeddings,
-#     collection_name="Hello_AI"
-# )
-
-
-# retrive =vectorstore.as_retriever(search_kwargs={"k": 1})
-
-
-# query = "Google"
-# res = retrive.invoke(query)
-
-# for i , q in enumerate(res):
-#     print(f"Result {i+1}:")
-#     print(q.page_content)
-#     print("\n")
