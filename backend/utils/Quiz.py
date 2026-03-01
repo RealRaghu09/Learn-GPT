@@ -1,13 +1,18 @@
-from langchain.output_parsers import StructuredOutputParser , ResponseSchema
-from langchain_google_genai import ChatGoogleGenerativeAI
-from dotenv import load_dotenv
-from langchain_core.prompts import PromptTemplate
+"""Quiz generator - inherits from MyModel for LLM access."""
+
 import json
 
-class Quiz:
+from langchain.output_parsers import ResponseSchema, StructuredOutputParser
+from langchain_core.prompts import PromptTemplate
+
+from utils.Model import MyModel
+
+
+class Quiz(MyModel):
+    """Generates MCQ quizzes from content at a specified difficulty level."""
+
     def __init__(self):
-        load_dotenv()
-        self.Model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+        super().__init__()
         self.schema = [
             ResponseSchema(name='question_1', description='Question 1 of the content'),
             ResponseSchema(name='question_1_option_1', description='Question 1 option 1'),
@@ -44,20 +49,16 @@ class Quiz:
         self.parser = StructuredOutputParser.from_response_schemas(self.schema)
 
         self.template = PromptTemplate(
-            template= "Give 5 MCQ's of level {level} to {content} .in {format}",
-            input_variables=["topic", "level"],
+            template="Give 5 MCQs of level {level} for the following content. Use format: {format}\n\nContent: {content}",
+            input_variables=["content", "level"],
             partial_variables={"format": self.parser.get_format_instructions()},
         )
 
-    def generate_quiz(self,content:str , level:str):
+    def generate_quiz(self, content: str, level: str) -> str:
+        """Generate a 5-question MCQ quiz from the given content."""
         try:
-            chain = self.template | self.Model | self.parser
-            Final = chain.invoke({"content": content, "level": level})  
-            
-            print(Final)
-            json_str = json.dumps(Final)
-            return str(json_str)
+            chain = self.template | self.model | self.parser
+            result = chain.invoke({"content": content, "level": level})
+            return json.dumps(result)
         except Exception as e:
-                return (f"Error in Quiz Generation: {str(e)}")
-            
-# NO DATA VALIDATION
+            return f"Error in Quiz Generation: {str(e)}"

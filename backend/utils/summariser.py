@@ -1,22 +1,26 @@
+"""Summariser utility - inherits from MyModel for LLM access."""
+
 from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
-from langchain.output_parsers import StructuredOutputParser 
 from langchain_core.output_parsers import StrOutputParser
-from langchain_google_genai import ChatGoogleGenerativeAI
-from dotenv import load_dotenv
-class Summariser:
+
+from utils.Model import MyModel
+
+
+class Summariser(MyModel):
+    """Summarises text to a specified word count using the base model."""
+
     def __init__(self):
-        load_dotenv()
-        self.model = ChatGoogleGenerativeAI(model = 'gemini-2.0-flash')
+        super().__init__()
         self.template = PromptTemplate(
-            template='summarize the following text to {size} words :\n\n {text}',
-            input_variables=['text', 'size']
+            template="Summarize the following text to {size} words:\n\n{text}",
+            input_variables=["text", "size"],
         )
 
-    def generate(self,text:str , size:str) ->str:
+    def generate(self, text: str, size: str) -> str:
+        """Summarise the given text to the specified word count."""
         try:
             chain = self.template | self.model | StrOutputParser()
-            response = chain.invoke({'text': text, 'size': size})
+            response = chain.invoke({"text": text, "size": size})
             return str(response)
         except Exception as e:
-            return f"Error from Summariser:  {str(e)}"
+            return f"Error from Summariser: {str(e)}"

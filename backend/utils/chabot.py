@@ -1,22 +1,26 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
-from dotenv import load_dotenv
-from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import StrOutputParser
+"""Chatbot utility - inherits from MyModel for LLM access."""
 
-class Chatbot:
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
+
+from utils.Model import MyModel
+
+
+class Chatbot(MyModel):
+    """Answers questions based on provided context using the base model."""
+
     def __init__(self):
-        load_dotenv()
-        self.Model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
-        
+        super().__init__()
         self.parser = StrOutputParser()
-    def generate_response(self,context:str, question: str) -> str:
-        try:
-            self.template = PromptTemplate(
-            template="Answer the following question: {question} of following {context}",
-            input_variables=['question' , 'context']
+        self.template = PromptTemplate(
+            template="Answer the following question based on the context.\n\nContext: {context}\n\nQuestion: {question}",
+            input_variables=["question", "context"],
         )
-            chain = self.template | self.Model | self.parser
-            response = chain.invoke({"question": question , 'context' : context})
-            return response
+
+    def generate_response(self, context: str, question: str) -> str:
+        """Generate an answer to the question using the given context."""
+        try:
+            chain = self.template | self.model | self.parser
+            return chain.invoke({"question": question, "context": context})
         except Exception as e:
             return f"Error from Chatbot: {str(e)}"

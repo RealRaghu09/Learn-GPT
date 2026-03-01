@@ -1,136 +1,155 @@
-from flask import Flask  , jsonify , request , make_response
+"""Learnly API - Flask backend for learning tools (summarise, quiz, chatbot, PDF loader)."""
+
+import os
+
+import fitz
+from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
+
 from utils.Model import MyModel
-from utils.summariser import Summariser
 from utils.Quiz import Quiz
 from utils.chabot import Chatbot
-from utils.web_page_loader import CustomWebBaseLoader
-from utils.pdf_loader import PDFScanner
 from utils.chroma import VectorEmbedding
-import fitz
-import os
+from utils.pdf_loader import PDFScanner
+from utils.summariser import Summariser
+from utils.web_page_loader import CustomWebBaseLoader
 
 app = Flask(__name__)
 CORS(app,resources={r"/*": {"origins": "*"}})
 
-# Welcome Route
-@app.route('/' , methods=['POST'])
-def home():
-    data = request.get_json()
-    response =  make_response(jsonify({"message":'Welcome to the Learnly API!'}) , 200)
-    return response
 
-# Health check route for Render
-@app.route('/health', methods=['GET'])
+def _success_response(message: str, response_data) -> tuple:
+    """Return a 200 JSON response with message and data."""
+    return make_response(
+        jsonify({"message": message, "response": response_data}),
+        200,
+    )
+
+
+def _error_response(error: Exception) -> tuple:
+    """Return a 500 JSON response with error details."""
+    return make_response(
+        jsonify({"message": str(error), "response": str(error)}),
+        500,
+    )
+
+@app.route("/", methods=["POST"])
+def home():
+    """Welcome endpoint."""
+    return make_response(jsonify({"message": "Welcome to the Learnly API!"}), 200)
+
+
+@app.route("/health", methods=["GET"])
 def health_check():
-    response =  make_response(jsonify({"status": "healthy", "message": "Learnly API is running"}) , 200)
-    return response
+    """Health check for Render deployment."""
+    return make_response(
+        jsonify({"status": "healthy", "message": "Learnly API is running"}),
+        200,
+    )
 
 
 # Experiment Route
 @app.route('/generate', methods=['POST'])
 def generate():
+    """Generate a response from raw prompt content."""
     try:
         data = request.get_json()
         llm = MyModel()
-        print("received data: ", data['content'])
-        response =  make_response(jsonify({"message":"Data received Sucessfull",'response': llm.generate(structured_prompt=data['content'])}) , 200)
-        return response
+        result = llm.generate(structured_prompt=data["content"])
+        return _success_response("Data received successfully", result)
     except Exception as e:
-        response =  make_response(jsonify({'message': str(e) , 'response': str(e)}) , 500)
-        return response
-    
-# Summarise Route
-@app.route('/generate/summarise' , methods=['POST'])
+        return _error_response(e)
+
+
+@app.route("/generate/summarise", methods=["POST"])
 def generate_summarise():
+    """Summarise content to a specified word count."""
     try:
         data = request.get_json()
         llm = Summariser()
-        response = llm.generate(text=data['content'] , size=data['size'])
-        response =  make_response(jsonify({"message":"Data received Sucessfull",'response': response}) , 200)
-        return response
+        result = llm.generate(text=data["content"], size=data["size"])
+        return _success_response("Data received successfully", result)
     except Exception as e:
-        response =  make_response(jsonify({'message': str(e) , 'response': str(e)}) , 500)
-        return response
+        return _error_response(e)
 
 # Quiz Route 
 @app.route('/generate/quiz' , methods=['POST'])
 def generate_quiz():
+    """Generate a 5-question MCQ quiz from content."""
     try:
         data = request.get_json()
         llm = Quiz()
-        response = llm.generate_quiz(content=data['content'] , level=data['level'])
-        response =  make_response(jsonify({'message' : 'Data received Sucessfull' , 'response': response}) , 200)
-        return response
+        result = llm.generate_quiz(content=data["content"], level=data["level"])
+        return _success_response("Data received successfully", result)
     except Exception as e:
-        response =  make_response(jsonify({ "message": str(e) , 'response': str(e)}) , 500)
-        return response
+        return _error_response(e)
 
-# Chatbot Route
-@app.route('/chat' , methods=['POST'])
-def Chat():
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    """Answer a question given context (chatbot)."""
     try:
         data = request.get_json()
         llm = Chatbot()
-        response = llm.generate_response(question=data['question'] , context=data['context'])
-        response =  make_response(jsonify({'message': 'Data received Sucessfull' , 'response': response}) , 200)
-        return response
+        result = llm.generate_response(
+            question=data["question"],
+            context=data["context"],
+        )
+        return _success_response("Data received successfully", result)
     except Exception as e:
-        response =  make_response(jsonify({'message': str(e) , 'response': str(e)}) , 500)
-        return response
-#web Loader Route 
-@app.route('/generate/webloader' , methods=['POST'])
-def generate_webloader():
-    try:
-        data = request.get_json()
-        llm = CustomWebBaseLoader()
-        response = llm.get_response(url = data['content'])
-        response =  make_response(jsonify({'message': 'Data received Sucessfull' , 'response': (response)}) , 200)
-        return response
-    except Exception as e:
-        response =  make_response(jsonify({'message': str(e) , 'response': str(e)}) , 500)
-        return response
-# PDF Loader Route
-@app.route('/load_pdf' , methods=['POST'])
-def load_pdf():
-    try :
-        data = request.get_json()
-        print("Data received")
-        pdf = PDFScanner()
-        response = pdf.LoadPDF(data['content'])
-        response =  make_response(jsonify({'message': 'Data received Sucessfull' , 'response': str(response)}) , 200)
-        return response
-    except Exception as e:
-        response =  make_response(jsonify({'message': str(e) , 'response': str(e)}) , 500)
-        return response
-    
-# Not Working Route
-@app.route('/load_pdf/ask', methods=['POST'])
-def load_pdf_ask():
-    try:
-        data = request.get_json()
-        pdf = PDFScanner()
-        pdf_text = pdf.LoadPDF(url=data['content'])
-        llm = VectorEmbedding()
-        llm.insert_documents(documents=pdf_text)
-        response = llm.query_documents(data['question'])
-        response =  make_response(jsonify({'message': 'Data received Sucessfull' , 'response': (response)}) , 200)
-        return response
-    except Exception as e:
-        response =  make_response(jsonify({'message': str(e) , 'response': f'you got a error:  {str(e)}'}) , 500)
-        return response
-    
-@app.route('/upload', methods=['POST'])
-def upload_pdf():
-    file = request.files['pdf']
-    doc = fitz.open(stream=file.read(), filetype="pdf")
-    text = ""
-    for page in doc:
-        text += page.get_text()
+        return _error_response(e)
 
-    response =  make_response(jsonify({'text': text}) , 200)
-    return response
-    
+
+@app.route("/generate/webloader", methods=["POST"])
+def generate_webloader():
+    """Load a web page and generate a summary."""
+    try:
+        data = request.get_json()
+        loader = CustomWebBaseLoader()
+        result = loader.get_response(url=data["content"])
+        return _success_response("Data received successfully", result)
+    except Exception as e:
+        return _error_response(e)
+
+
+@app.route("/load_pdf", methods=["POST"])
+def load_pdf():
+    """Load and extract text from a PDF URL."""
+    try:
+        data = request.get_json()
+        pdf = PDFScanner()
+        result = pdf.LoadPDF(data["content"])
+        return _success_response("Data received successfully", str(result))
+    except Exception as e:
+        return _error_response(e)
+
+
+@app.route("/load_pdf/ask", methods=["POST"])
+def load_pdf_ask():
+    """Load PDF, embed it, and answer questions about it."""
+    try:
+        data = request.get_json()
+        pdf = PDFScanner()
+        pdf_text = pdf.LoadPDF(data["content"])
+        embedding = VectorEmbedding()
+        embedding.insert_documents(documents=pdf_text)
+        result = embedding.query_documents(data["question"])
+        return _success_response("Data received successfully", result)
+    except Exception as e:
+        return make_response(
+            jsonify({"message": str(e), "response": f"Error: {str(e)}"}),
+            500,
+        )
+
+
+@app.route("/upload", methods=["POST"])
+def upload_pdf():
+    """Upload a PDF file and extract its text."""
+    file = request.files["pdf"]
+    doc = fitz.open(stream=file.read(), filetype="pdf")
+    text = "".join(page.get_text() for page in doc)
+    return make_response(jsonify({"text": text}), 200)
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
