@@ -1,1 +1,1 @@
-# Vite And React + Flask Project using Langchain (LEarnly) Learn From GPT 
+# Vite And React + FastAPI Project using Langchain (LEarnly) Learn From GPT 

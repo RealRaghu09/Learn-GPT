@@ -1,11 +1,11 @@
 ## LEARN-GPT
 link : [LEARN-GPT](https://learn-gpt-sigma.vercel.app/)
-this is the Webpage is built on top of Vite + React with JS Serving as Frontend and Flask as Backend with use of Langchain and RAG , I have built the application that takes a input either the pdf link or the content  sent to the RAG to create the vector Embeddings and 
+this is the Webpage is built on top of Vite + React with JS Serving as Frontend and FastAPI as Backend with use of Langchain and RAG , I have built the application that takes a input either the pdf link or the content  sent to the RAG to create the vector Embeddings and 
 to Provide accurate Answers to the User from the Given Contexts
 [Demo Video](https://youtu.be/VWLOmBM-kSo)
 ## Tech Stack 
 --- Vite + React (Frontend)  - JavaScript
---- Flask (Backend) - Python
+--- FastAPI (Backend) - Python
 --- LangChain  (Frontier Model) - Python 
 --- PDFLoader - Python 
 --- RAG Vector Database Chroma DB (to store the Data in terms of Vectors of 1534 dimensions ) - Python 

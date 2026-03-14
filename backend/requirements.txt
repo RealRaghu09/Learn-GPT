@@ -14,8 +14,6 @@ click==8.2.0
 dataclasses-json==0.6.7
 fastapi==0.135.1
 filetype==1.2.0
-Flask==3.1.1
-flask-cors==5.0.1
 frozenlist==1.6.0
 google-ai-generativelanguage==0.6.18
 google-api-core==2.24.2
