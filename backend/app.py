@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from utils.Model import MyModel
 from utils.Quiz import Quiz
-from utils.chabot import Chatbot
+from utils.chatbot import Chatbot
 from utils.chroma import VectorEmbedding
 from utils.pdf_loader import PDFScanner
 from utils.summariser import Summariser
@@ -142,14 +142,3 @@ async def upload_pdf(pdf: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-if __name__ == "__main__":
-    import uvicorn
-
-    port = int(os.environ.get("PORT", 8000))
-
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=port,
-        reload=True
-    )
