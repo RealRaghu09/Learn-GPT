@@ -4,6 +4,7 @@ import os
 import fitz
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 
 from utils.Model import MyModel
@@ -34,12 +35,12 @@ def success_response(message: str, response_data):
 
 
 @app.post("/")
-def home():
+async def home():
     return {"message": "Welcome to the Learnly API!"}
 
 
 @app.get("/health")
-def health_check():
+async def health_check():
     return {
         "status": "healthy",
         "message": "Learnly API is running"
@@ -47,32 +48,33 @@ def health_check():
 
 
 @app.post("/generate")
-def generate(data: dict):
+async def generate(data: dict):
     try:
         llm = MyModel()
-        result = llm.generate(structured_prompt=data["content"])
+        result = await run_in_threadpool(llm.generate, structured_prompt=data["content"])
         return success_response("Data received successfully", result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/generate/summarise")
-def generate_summarise(data: dict):
+async def generate_summarise(data: dict):
     try:
         llm = Summariser()
-        result = llm.generate(text=data["content"], size=data["size"])
+        result = await run_in_threadpool(llm.generate, text=data["content"], size=data["size"])
         return success_response("Data received successfully", result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/generate/quiz")
-def generate_quiz(data: dict):
+async def generate_quiz(data: dict):
     try:
         llm = Quiz()
-        result = llm.generate_quiz(
+        result = await run_in_threadpool(
+            llm.generate_quiz,
             content=data["content"],
-            level=data["level"]
+            level=data["level"],
         )
         return success_response("Data received successfully", result)
     except Exception as e:
@@ -80,12 +82,13 @@ def generate_quiz(data: dict):
 
 
 @app.post("/chat")
-def chat(data: dict):
+async def chat(data: dict):
     try:
         llm = Chatbot()
-        result = llm.generate_response(
+        result = await run_in_threadpool(
+            llm.generate_response,
             question=data["question"],
-            context=data["context"]
+            context=data["context"],
         )
         return success_response("Data received successfully", result)
     except Exception as e:
@@ -93,17 +96,17 @@ def chat(data: dict):
 
 
 @app.post("/generate/webloader")
-def generate_webloader(data: dict):
+async def generate_webloader(data: dict):
     try:
         loader = CustomWebBaseLoader()
-        result = loader.get_response(url=data["content"])
+        result = await run_in_threadpool(loader.get_response, url=data["content"])
         return success_response("Data received successfully", result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/load_pdf")
-def load_pdf(data: dict):
+async def load_pdf(data: dict):
     try:
         pdf = PDFScanner()
         result = pdf.LoadPDF(data["content"])
@@ -113,15 +116,15 @@ def load_pdf(data: dict):
 
 
 @app.post("/load_pdf/ask")
-def load_pdf_ask(data: dict):
+async def load_pdf_ask(data: dict):
     try:
         pdf = PDFScanner()
-        pdf_text = pdf.LoadPDF(data["content"])
+        pdf_text = await run_in_threadpool(pdf.LoadPDF, data["content"])
 
         embedding = VectorEmbedding()
-        embedding.insert_documents(documents=pdf_text)
+        await run_in_threadpool(embedding.insert_documents, documents=pdf_text)
 
-        result = embedding.query_documents(data["question"])
+        result = await run_in_threadpool(embedding.query_documents, data["question"])
 
         return success_response("Data received successfully", result)
 
