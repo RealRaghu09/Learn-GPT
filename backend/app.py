@@ -17,7 +17,7 @@ from utils.web_page_loader import CustomWebBaseLoader
 
 app = FastAPI()
 
-# CORS
+# CORS and add rate limiter 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
