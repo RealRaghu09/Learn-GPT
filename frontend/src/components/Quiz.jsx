@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './Quiz.css'
 import { useData } from '../context/DataContext'
-import { API_ENDPOINTS } from '../config/api'
+import { generateQuiz } from '../requests/requests'
 
 export default function Quiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -23,22 +23,10 @@ export default function Quiz() {
         content: finalData,
         level: difficultyLevel
       })
-      const response = await fetch(API_ENDPOINTS.QUIZ, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          "content": finalData,
-          "level": difficultyLevel
-        })
+      const data = await generateQuiz({
+        content: finalData,
+        level: difficultyLevel,
       })
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.message}`)
-      }
-      
-      const data = await response.json()
       const QuestionSet = data['response'] 
       console.log('API Response:', typeof(QuestionSet))
       

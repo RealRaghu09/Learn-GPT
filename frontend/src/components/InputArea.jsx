@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './InputArea.css'
 import { useData } from '../context/DataContext'
-import { API_ENDPOINTS } from '../config/api'
+import { loadPdfContent, postRootContent, uploadPdf } from '../requests/requests'
 
 export default function InputArea() {
   const [pdfLink, setPdfLink] = useState('');
@@ -62,15 +62,7 @@ export default function InputArea() {
     };
 
     try {
-      const res = await fetch(API_ENDPOINTS.LOAD_PDF, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data),
-      });
-    
-      const responseData = await res.json();
+      const responseData = await loadPdfContent(data);
       setResult(responseData);
       setPdf_data(responseData.response);
       const newFinalData = responseData.response || context;
@@ -93,15 +85,7 @@ const handleContextSubmit = async () => {
   };
   
   try {
-      const res = await fetch(API_ENDPOINTS.ROOT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data),
-      });
-    
-      const responseData = await res.json();
+      const responseData = await postRootContent(data);
       setResult(responseData);
       const newFinalData = pdf_data || context;
       setFinalData(newFinalData);
@@ -119,12 +103,7 @@ const handleUpload = async (e) => {
   formData.append("pdf", file);
 
   try {
-    const response = await fetch(API_ENDPOINTS.UPLOAD, {
-      method: "POST",
-      body: formData,
-    });
-
-    const result = await response.json();
+    const result = await uploadPdf(formData);
     console.log("Extracted text:", result.text);
     setUploadStatus('Done!');
     setFinalData(result.text || '');

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Chatbot.css';
 import { useData } from '../context/DataContext'
-import { API_ENDPOINTS } from '../config/api'
+import { sendChatMessage } from '../requests/requests'
 
 export default function Chatbot() {
   const userSectionRef = useRef(null);
@@ -16,40 +16,6 @@ export default function Chatbot() {
       behavior: 'smooth',
       block: 'end',
     });
-  };
-
-  const handleButtonClick = async (action) => {
-    console.log(`${action} button clicked`);
-    let size = action // for Sending json
-    // console.log(size)
-    console.log(finalData)
-    if (!finalData) {
-      console.log('Please provide a Context');
-      return;
-    }
-
-    const data = {
-      "question": question,
-      "context": finalData
-    };
-
-    try {
-      const res = await fetch(API_ENDPOINTS.CHAT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data),
-      });
-
-      const responseData = await res.json();
-      const responseContent = responseData['response']
-      setSummary(responseContent)
-      console.log("Final Summary ", responseContent)
-
-    } catch (error) {
-      console.error('Error:', error);
-    }
   };
 
   const formatResponse = (text) => {
@@ -82,20 +48,10 @@ export default function Chatbot() {
     setIsLoading(true);
 
     try {
-      const data = {
-        "question": input,
-        "context": finalData
-      };
-
-      const res = await fetch(API_ENDPOINTS.CHAT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data),
+      const responseData = await sendChatMessage({
+        question: input,
+        context: finalData,
       });
-
-      const responseData = await res.json();
       const responseContent = responseData['response'];
 
       // Format the response before displaying

@@ -1,7 +1,7 @@
 import React ,{useEffect , useState} from 'react';
 import './Summary.css';
 import { useData } from '../context/DataContext';
-import { API_ENDPOINTS } from '../config/api';
+import { summarizeContent } from '../requests/requests';
 
 export default function Summary() {
   const {finalData} = useData();
@@ -23,15 +23,7 @@ export default function Summary() {
     };
   
     try {
-      const res = await fetch(API_ENDPOINTS.SUMMARIZE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data),
-      });
-    
-      const responseData = await res.json();
+      const responseData = await summarizeContent(data);
       const responseContent = responseData['response']
       setSummary(responseContent)
       console.log("Final Summary ",responseContent)
