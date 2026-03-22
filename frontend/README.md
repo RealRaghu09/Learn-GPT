@@ -1,1 +1,0 @@
-# Vite And React + FastAPI Project using Langchain (LEarnly) Learn From GPT 
