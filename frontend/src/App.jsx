@@ -1,9 +1,11 @@
 import { AppShell } from './components/layout/AppShell'
-
+import { DataProvider } from './components/context/dataContext';
 function App() {
   return (
     <div>
-      <AppShell/>
+      <DataProvider>
+            <AppShell/>
+      </DataProvider>
     </div>
   );
 }
