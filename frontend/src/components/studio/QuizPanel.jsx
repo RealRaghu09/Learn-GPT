@@ -1,4 +1,8 @@
+import { useState } from "react";
+import { useData } from "../context/dataContext";
 export function QuizPanel() {
+  const { finalData } = useData();
+
   return (
     <div className="flex h-full flex-col overflow-y-auto p-4">
       <div className="mx-auto w-full max-w-2xl">
@@ -12,13 +16,19 @@ export function QuizPanel() {
           </p>
           <button
             type="button"
-            disabled
-            className="mt-4 w-full rounded-lg bg-[#28292a] px-4 py-2.5 text-sm font-medium text-[#9aa0a6]"
-          >
-            Generate quiz
+            disabled={!finalData}
+            className={`mt-4 w-full rounded-lg px-4 py-2.5 text-sm font-medium transition
+                ${
+                  finalData
+                    ? "bg-[#8ab4f8] text-black hover:bg-[#a1c2fa]"
+                    : "bg-[#28292a] text-[#9aa0a6] cursor-not-allowed"
+                }
+              `}
+              >
+            Generate Quiz
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
