@@ -76,13 +76,13 @@ export function SourcesPanel() {
 
   // ---------------- MAIN SUBMIT ----------------
   const handleSubmit = async () => {
-    // ❌ both filled
+
     if (pdfLink && context) {
       setStatus("Use only one");
       return;
     }
 
-    // ❌ none filled
+
     if (!pdfLink && !context) {
       setStatus("Provide at least one");
       return;

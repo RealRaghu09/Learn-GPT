@@ -17,7 +17,7 @@ export function QuizPanel() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  // ✅ Fetch Questions (accepts level directly)
+  // Fetch Questions 
   const fetchQuestions = async (level) => {
     const selectedLevel = level || difficulty;
 
@@ -67,7 +67,7 @@ export function QuizPanel() {
     setIsLoading(false);
   };
 
-  // ✅ Option click
+  //  Option click
   const handleOptionClick = (option) => {
     if (showAnswer) return;
 
@@ -79,7 +79,7 @@ export function QuizPanel() {
     }
   };
 
-  // ✅ Next
+  //  Next
   const handleNext = () => {
     if (currentQuestion === apiQuestions.length - 1) {
       setShowResults(true);
@@ -91,7 +91,7 @@ export function QuizPanel() {
     setShowAnswer(false);
   };
 
-  // ✅ Reset
+  //  Reset
   const handleReset = () => {
     setApiQuestions([]);
     setDifficulty(null);
@@ -140,7 +140,7 @@ export function QuizPanel() {
                     <button
                       onClick={() => {
                         setDifficulty(lvl);
-                        fetchQuestions(lvl); // ✅ DIRECT CALL
+                        fetchQuestions(lvl); 
                       }}
                       className={`w-full text-left px-4 py-2 ${
                         difficulty === lvl
@@ -167,7 +167,7 @@ export function QuizPanel() {
 
             <h2>Q{currentQuestion + 1}</h2>
             <p>{apiQuestions[currentQuestion].question}</p>
-
+            {/* DOOO THISSS RAGHHHHHUUUUUNNNANDAN */}
             <div className="grid gap-2 mt-3">
               {apiQuestions[currentQuestion].options.map((opt, i) => (
                 <button
