@@ -1,22 +1,13 @@
-import { useState } from 'react'
-import './App.css'
-import Navbar from './components/Navbar'
-import InputArea from './components/InputArea'
-import ActionButtons from './components/ActionButtons'
-import { DataProvider } from './context/DataContext'
-
+import { AppShell } from './components/layout/AppShell'
+import { DataProvider } from './components/context/dataContext';
 function App() {
   return (
-    <DataProvider>
-      <div className="app-container">
-        <Navbar />
-        <div className="main-content">
-          <InputArea />
-          <ActionButtons />
-        </div>
-      </div>
-    </DataProvider>
-  )
+    <div>
+      <DataProvider>
+            <AppShell/>
+      </DataProvider>
+    </div>
+  );
 }
 
 export default App
