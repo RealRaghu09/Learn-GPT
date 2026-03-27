@@ -3,6 +3,7 @@ import { useData } from "../context/dataContext";
 import { summarizeContent } from "../../requests/requests";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import ReactMarkdown from 'react-markdown'
 
 export function SummaryPanel() {
   const { finalData } = useData();
@@ -47,7 +48,9 @@ export function SummaryPanel() {
         {/* Summary Output */}
         <div className="min-h-[200px] rounded-xl border border-[#3c4043] bg-[#1e1f20] p-6">
           <p className="text-sm leading-relaxed text-[#bdc1c6]">
-            {summary || "Summaries will appear here after generation."}
+            <ReactMarkdown >
+              {summary || "Summaries will appear here after generation."}
+              </ReactMarkdown>
           </p>
         </div>
 

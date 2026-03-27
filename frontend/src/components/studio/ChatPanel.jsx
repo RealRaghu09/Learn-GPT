@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useData } from '../context/dataContext'
 import { sendChatMessage } from '../../requests/requests' 
+import ReactMarkdown from 'react-markdown'
 export function ChatPanel() {
   const { finalData } = useData()
 
@@ -40,8 +41,8 @@ export function ChatPanel() {
   const handleSend = async (e) => {
     e.preventDefault()
     if (!input.trim()) return
-
-    const userMessage = { text: input, sender: 'user' }
+    const newinput = "**" + input + "**"
+    const userMessage = { text: newinput, sender: 'user' }
     setMessages((prev) => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
@@ -83,7 +84,10 @@ export function ChatPanel() {
                   : 'bg-[#28292a] text-[#e8eaed]'
               }`}
             >
-              {msg.text}
+              {/* {msg.text} */}
+              <ReactMarkdown >
+                {msg.text} 
+                </ReactMarkdown>
             </div>
           ))}
 
