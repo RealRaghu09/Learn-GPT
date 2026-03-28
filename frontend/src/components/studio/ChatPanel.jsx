@@ -1,75 +1,85 @@
-import { useState, useRef } from 'react'
-import { useData } from '../context/dataContext'
-import { sendChatMessage } from '../../requests/requests' 
-import ReactMarkdown from 'react-markdown'
+import { useState, useRef } from "react";
+import { useData } from "../context/dataContext";
+import { sendChatMessage } from "../../requests/requests";
+import ReactMarkdown from "react-markdown";
 export function ChatPanel() {
-  const { finalData } = useData()
+  const { finalData } = useData();
 
   const [messages, setMessages] = useState([
     {
-      text: 'Ask questions about your sources. I will answer using only what you have added to this notebook.',
-      sender: 'bot',
+      text: "Ask questions about your sources. I will answer using only what you have added to this notebook.",
+      sender: "bot",
     },
-  ])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-
-  const bottomRef = useRef(null)
+  ]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const bottomRef = useRef(null);
 
   // Scroll to bottom
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'end',
-    })
-  }
+      behavior: "smooth",
+      block: "end",
+    });
+  };
 
   // Format response
   const formatResponse = (text) => {
-    let formatted = text.trim()
-    formatted = formatted.replace(/\s+/g, ' ')
-    formatted = formatted.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '')
-    formatted = formatted.replace(/([.,!?])([a-zA-Z])/g, '$1 $2')
+    let formatted = text.trim();
+    formatted = formatted.replace(/\s+/g, " ");
+    formatted = formatted.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, "");
+    formatted = formatted.replace(/([.,!?])([a-zA-Z])/g, "$1 $2");
     formatted = formatted.replace(
       /(^|[.!?]\s+)([a-z])/g,
-      (match, p1, p2) => p1 + p2.toUpperCase()
-    )
-    return formatted
-  }
+      (match, p1, p2) => p1 + p2.toUpperCase(),
+    );
+    return formatted;
+  };
 
   // Handle send
   const handleSend = async (e) => {
-    e.preventDefault()
-    if (!input.trim()) return
-    const newinput = "**" + input + "**"
-    const userMessage = { text: newinput, sender: 'user' }
-    setMessages((prev) => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
+    e.preventDefault();
+
+    if (!input.trim()) return;
+
+    // ✅ Check context FIRST
+    if (!finalData || finalData.trim() === "") {
+      setError(
+        " Please upload or generate content first before asking questions.",
+      );
+      return; // 🚨 VERY IMPORTANT (stop execution)
+    }
+
+    setError(null); // clear previous error
+
+    const newinput = "**" + input + "**";
+    const userMessage = { text: newinput, sender: "user" };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
 
     try {
-      // Replace with your API call
       const responseData = await sendChatMessage({
         question: input,
         context: finalData,
-      })
+      });
 
-      const formatted = formatResponse(responseData.response)
+      const formatted = formatResponse(responseData.response);
 
-      const botMessage = { text: formatted, sender: 'bot' }
-      setMessages((prev) => [...prev, botMessage])
+      const botMessage = { text: formatted, sender: "bot" };
+      setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
-      console.error(error)
+      console.error(error);
       setMessages((prev) => [
         ...prev,
-        { text: 'Something went wrong. Try again.', sender: 'bot' },
-      ])
+        { text: "Something went wrong. Try again.", sender: "bot" },
+      ]);
     } finally {
-      setIsLoading(false)
-      setTimeout(scrollToBottom, 100)
+      setIsLoading(false);
+      setTimeout(scrollToBottom, 100);
     }
-  }
-
+  };
   return (
     <div className="flex h-full flex-col">
       {/* Chat messages */}
@@ -79,25 +89,27 @@ export function ChatPanel() {
             <div
               key={idx}
               className={`rounded-2xl px-4 py-3 text-sm ${
-                msg.sender === 'user'
-                  ? 'bg-[#8ab4f8] text-black self-end'
-                  : 'bg-[#28292a] text-[#e8eaed]'
+                msg.sender === "user"
+                  ? "bg-[#8ab4f8] text-black self-end"
+                  : "bg-[#28292a] text-[#e8eaed]"
               }`}
             >
               {/* {msg.text} */}
-              <ReactMarkdown >
-                {msg.text} 
+              <ReactMarkdown>
+                {msg.text}
                 </ReactMarkdown>
             </div>
           ))}
-
-          {isLoading && (
-            <div className="text-sm text-gray-400">Typing...</div>
-          )}
+          {isLoading && <div className="text-sm text-gray-400">Typing...</div>}
 
           <div ref={bottomRef} />
         </div>
       </div>
+          {error && (
+            <div className="mx-auto max-w-2xl px-4 pb-2 text-sm text-red-400">
+              {error}
+            </div>
+          )}
 
       {/* Input box */}
       <form
@@ -122,5 +134,5 @@ export function ChatPanel() {
         </div>
       </form>
     </div>
-  )
+  );
 }
