@@ -16,11 +16,13 @@ export function QuizPanel() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [showResults, setShowResults] = useState(false);
-
-  // Fetch Questions 
+  // Fetch Questions
   const fetchQuestions = async (level) => {
     const selectedLevel = level || difficulty;
-
+    if (finalData === "") {
+      setError("Please give the Context to Provide Quiz");
+      return;
+    }
     if (!selectedLevel) {
       setError("Please select difficulty");
       return;
@@ -107,17 +109,15 @@ export function QuizPanel() {
       <div className="mx-auto w-full max-w-2xl">
         <h3 className="text-white text-lg mb-2">Quiz</h3>
 
-        {/* ERROR */}
-        {error && <p className="text-red-400">{error}</p>}
-
         {/* RESULTS */}
         {showResults && (
           <div className="text-white text-center mt-6">
             <h2>Quiz Completed 🎉</h2>
-            <p>
-              Score: {currentScore}/{apiQuestions.length}
-            </p>
-            <button onClick={handleReset} className="mt-3 bg-blue-500 p-2 rounded">
+            Score: {currentScore}/{apiQuestions.length}
+            <button
+              onClick={handleReset}
+              className="mt-3 bg-blue-500 p-2 rounded"
+            >
               Restart
             </button>
           </div>
@@ -126,6 +126,8 @@ export function QuizPanel() {
         {/* DROPDOWN */}
         {!showResults && apiQuestions.length === 0 && (
           <div className="bg-[#1e1f20] p-6 rounded-xl border border-[#3c4043]">
+            {/* ERROR */}
+            {error && <p className="text-red-400">{error}</p>}
             <p className="text-gray-300 mb-4">Select Difficulty</p>
 
             <Menu as="div" className="relative w-full">
@@ -140,7 +142,7 @@ export function QuizPanel() {
                     <button
                       onClick={() => {
                         setDifficulty(lvl);
-                        fetchQuestions(lvl); 
+                        fetchQuestions(lvl);
                       }}
                       className={`w-full text-left px-4 py-2 ${
                         difficulty === lvl
@@ -163,10 +165,9 @@ export function QuizPanel() {
         {/* QUIZ */}
         {apiQuestions.length > 0 && !showResults && (
           <div className="mt-6 text-white">
-            <p>Score: {currentScore}</p>
-
+            Score: {currentScore}
             <h2>Q{currentQuestion + 1}</h2>
-            <p>{apiQuestions[currentQuestion].question}</p>
+            {apiQuestions[currentQuestion].question}
             {/* DOOO THISSS RAGHHHHHUUUUUNNNANDAN */}
             <div className="grid gap-2 mt-3">
               {apiQuestions[currentQuestion].options.map((opt, i) => (
@@ -179,8 +180,8 @@ export function QuizPanel() {
                       ? opt === apiQuestions[currentQuestion].correct
                         ? "bg-green-500"
                         : opt === selectedOption
-                        ? "bg-red-500"
-                        : "bg-gray-700"
+                          ? "bg-red-500"
+                          : "bg-gray-700"
                       : "bg-gray-700 hover:bg-gray-600"
                   }`}
                 >
@@ -188,7 +189,6 @@ export function QuizPanel() {
                 </button>
               ))}
             </div>
-
             {showAnswer && (
               <button
                 onClick={handleNext}
