@@ -1,5 +1,7 @@
 # Learnly GPT
 
+- link : [LEARN-GPT](https://learn-gpt-sigma.vercel.app/)
+- [Demo Video](https://youtu.be/VWLOmBM-kSo)
 ## Project Overview
 
 Learnly GPT is an AI-powered learning assistant that transforms traditional PDF reading into an interactive learning experience using Generative AI and Retrieval-Augmented Generation (RAG).
