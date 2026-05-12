@@ -21,6 +21,12 @@ export default function HomePage() {
           </p>
 
           {/* Features */}
+          <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+              <h4 className="text-white font-medium"> Generate PPTs</h4>
+              <p className="text-sm text-[#9aa0a6]">
+                generate PPT's to deep dive into the sources.
+              </p>
+            </div>
           <div className="space-y-3 mt-4">
             <div className="p-3 rounded-lg bg-white/5 border border-white/10">
               <h4 className="text-white font-medium">Generate Summaries</h4>
