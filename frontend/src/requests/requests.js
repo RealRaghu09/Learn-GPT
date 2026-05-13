@@ -8,15 +8,12 @@ export async function generateStructured({ content }) {
     headers: jsonHeaders,
     body: JSON.stringify({ content }),
   });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => "");
+    throw new Error(errText || `HTTP error! status: ${res.status}`);
+  }
   const blob = await res.blob();
-
-  const url = window.URL.createObjectURL(blob);
-
-  const documentElement = document.createElement("a");
-  documentElement.href = url;
-  
-
-  return url ;
+  return window.URL.createObjectURL(blob);
 }
 
 export async function sendChatMessage({ question, context }) {
