@@ -2,6 +2,23 @@ import { API_ENDPOINTS } from '../config/api';
 
 const jsonHeaders = { 'Content-Type': 'application/json' };
 
+export async function generateStructured({ content }) {
+  const res = await fetch(API_ENDPOINTS.GENERATE_PPT, {
+    method: "POST",
+    headers: jsonHeaders,
+    body: JSON.stringify({ content }),
+  });
+  const blob = await res.blob();
+
+  const url = window.URL.createObjectURL(blob);
+
+  const documentElement = document.createElement("a");
+  documentElement.href = url;
+  
+
+  return url ;
+}
+
 export async function sendChatMessage({ question, context }) {
   const res = await fetch(API_ENDPOINTS.CHAT, {
     method: 'POST',

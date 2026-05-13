@@ -2,12 +2,14 @@ import { useState } from "react";
 import { ChatPanel } from "./ChatPanel";
 import { QuizPanel } from "./QuizPanel";
 import { SummaryPanel } from "./SummaryPanel";
+import { PPTPanel } from "./PPTPanel"
 import HomePage from "./HomePage";
 const TABS = [
   { id: "quiz", label: "Quiz" },
   { id: "summary", label: "Summary" },
   { id: "chat", label: "Chat" },
   { id: "home", label: "Home" },
+  {id : 'ppt' , label : "PPT"}
 ];
 
 export function StudioPanel() {
@@ -43,6 +45,7 @@ export function StudioPanel() {
         {tab === "summary" && <SummaryPanel />}
         {tab === "chat" && <ChatPanel />}
         {tab === "home" && <HomePage />}
+        {tab === "ppt" && <PPTPanel/>}
       </div>
     </div>
   );

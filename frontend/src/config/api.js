@@ -2,6 +2,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://learn-gpt.onrender.com';
 
 export const API_ENDPOINTS = {
+  GENERATE_PPT: `${API_BASE_URL}/generate_ppt`,
   QUIZ: `${API_BASE_URL}/generate/quiz`,
   CHAT: `${API_BASE_URL}/chat`,
   SUMMARIZE: `${API_BASE_URL}/generate/summarise`,
