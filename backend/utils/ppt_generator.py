@@ -12,10 +12,27 @@ from pptx.dml.color import RGBColor
 import datetime
 import shutil
 import tempfile
+import hashlib
 from utils.Model import MODEL_NAME
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+
+
+def _collect_downloaded_image_paths(root_dir: str) -> list[str]:
+    """Collect all image file paths from the downloaded images directory."""
+    image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'}
+    image_paths = []
+    
+    try:
+        for root, dirs, files in os.walk(root_dir):
+            for file in files:
+                if os.path.splitext(file)[1].lower() in image_extensions:
+                    image_paths.append(os.path.join(root, file))
+    except Exception as e:
+        print(f"Warning: error collecting image paths: {e}")
+    
+    return sorted(image_paths)
 
 
 def add_google_image_slides_to_presentation(
@@ -259,10 +276,10 @@ class ppt:
 
         # Save with hashed filename
         timestamp = datetime.datetime.now().isoformat()
-        unique_hash = (topic + timestamp)
-        filename = f"generated_ppt/generated_presentation_{unique_hash}.pptx"
-
-        os.makedirs("generated_ppt", exist_ok=True)
+        unique_hash = hashlib.md5((topic + timestamp).encode()).hexdigest()
+        output_dir = os.path.abspath("generated_ppt")
+        os.makedirs(output_dir, exist_ok=True)
+        filename = os.path.join(output_dir, f"generated_presentation_{unique_hash}.pptx")
         prs.save(filename)
 
         # Clear transient data after generation completes
@@ -357,9 +374,10 @@ class ppt:
 
         # Save presentation
         timestamp = datetime.datetime.now().isoformat()
-        unique_hash = (topic + timestamp)
-        filename = f"generated_ppt/modern_presentation_{unique_hash}.pptx"
-        os.makedirs("generated_ppt", exist_ok=True)
+        unique_hash = hashlib.md5((topic + timestamp).encode()).hexdigest()
+        output_dir = os.path.abspath("generated_ppt")
+        os.makedirs(output_dir, exist_ok=True)
+        filename = os.path.join(output_dir, f"modern_presentation_{unique_hash}.pptx")
         prs.save(filename)
         
         # Clear transient data after generation completes
@@ -458,9 +476,10 @@ class ppt:
 
         # Save file
         timestamp = datetime.datetime.now().isoformat()
-        unique_hash = hash(topic + timestamp) % (10 ** 8)
-        filename = f"generated_ppt/creative_presentation_{unique_hash}.pptx"
-        os.makedirs("generated_ppt", exist_ok=True)
+        unique_hash = hashlib.md5((topic + timestamp).encode()).hexdigest()
+        output_dir = os.path.abspath("generated_ppt")
+        os.makedirs(output_dir, exist_ok=True)
+        filename = os.path.join(output_dir, f"creative_presentation_{unique_hash}.pptx")
         prs.save(filename)
         
         # Clear transient data after generation completes
@@ -552,9 +571,10 @@ class ppt:
 
         # Save
         timestamp = datetime.datetime.now().isoformat()
-        unique_hash = hash(topic + timestamp) % (10 ** 8)
-        filename = f"generated_ppt/retro_presentation_{unique_hash}.pptx"
-        os.makedirs("generated_ppt", exist_ok=True)
+        unique_hash = hashlib.md5((topic + timestamp).encode()).hexdigest()
+        output_dir = os.path.abspath("generated_ppt")
+        os.makedirs(output_dir, exist_ok=True)
+        filename = os.path.join(output_dir, f"retro_presentation_{unique_hash}.pptx")
         prs.save(filename)
         
         # Clear transient data after generation completes
