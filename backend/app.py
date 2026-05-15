@@ -4,7 +4,7 @@ import os
 from typing import Any, Literal
 import fitz
 
-from fastapi import Depends, FastAPI, UploadFile, File, HTTPException, Request
+from fastapi import Depends, FastAPI, UploadFile, File, HTTPException, Request, BackgroundTasks
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -295,27 +295,38 @@ async def upload_pdf(pdf: UploadFile = File(...)):
     "/generate_ppt",
     dependencies=[Depends(rate_limit_dependency(_limiter_2_per_10s, key_prefix="generate_ppt"))],
 )
-async def generate_ppt(body: PPTGenerateBody):
+async def generate_ppt(body: PPTGenerateBody, background_tasks: BackgroundTasks):
+    file_path = None
     try:
         response = await run_in_threadpool(_generate_ppt_sync, body.content)
         file_path = response.get("file_path", "")
         if not file_path:
             raise HTTPException(status_code=500, detail="PPT generation did not return a file path")
-        if not os.path.isabs(file_path):
-            file_path = os.path.abspath(file_path)
+        
+        # Ensure file exists before attempting to send
         if not os.path.isfile(file_path):
-            raise HTTPException(status_code=500, detail="Generated presentation file was not found")
+            raise HTTPException(status_code=500, detail=f"Generated presentation file not found at {file_path}")
+        
         headers = {}
         warnings = response.get("warnings")
         if warnings:
             headers["X-Learnly-Warning"] = " | ".join(str(w).replace("\n", " ") for w in warnings)
+        
+        # Schedule file cleanup after response is sent
+        background_tasks.add_task(os.remove, file_path)
         return FileResponse(
             file_path,
             filename="presentation.pptx",
             media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
             headers=headers,
         )
+    except HTTPException:
+        raise
     except Exception as e:
+        # Clean up file if it exists and generation failed
+        if file_path and os.path.isfile(file_path):
+            try:
+                os.remove(file_path)
+            except Exception:
+                pass
         raise HTTPException(status_code=500, detail=str(e))
-    finally :
-        os.remove(file_path)
