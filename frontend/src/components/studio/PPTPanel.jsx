@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import { useData } from "../context/dataContext";
 import { generateStructured } from "../../requests/requests";
 
 const TARGET_AUDIENCE = ["students", "educators", "executives", "general"];
 const NUM_SLIDES = ["5", "10", "15", "20", "25"];
 const PRESENTATION_STYLE = ["minimal", "detailed", "storytelling", "data_driven"];
+const LAYOUTS = ["normal", "modern", "creative", "retro"];
 const LANGUAGES = ["English", "Spanish", "French", "Hindi", "German", "Japanese"];
 const TONES = ["formal", "casual", "persuasive", "neutral", "inspirational"];
 const SUMMARY_LEVELS = ["brief", "standard", "detailed"];
@@ -70,8 +70,8 @@ function SpinnerIcon({ className }) {
 export function PPTPanel() {
   const { finalData } = useData();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [outline, setOutline] = useState("");
   const [generateError, setGenerateError] = useState(null);
+  const [generateWarning, setGenerateWarning] = useState(null);
 
   const [user_response, setUserResponse] = useState({
     target_audience: "general",
@@ -83,7 +83,8 @@ export function PPTPanel() {
     tone: "neutral",
     summary_level: "standard",
     theme: "black",
-    data : finalData
+    layout: "modern",
+    data: finalData,
   });
 
   const setField = (key, value) => {
@@ -96,10 +97,15 @@ export function PPTPanel() {
 
   const handleGenerate = async () => {
     setGenerateError(null);
+    setGenerateWarning(null);
     setIsGenerating(true);
     let objectUrl;
     try {
-      objectUrl = await generateStructured({ content: user_response });
+      const result = await generateStructured({ content: user_response });
+      objectUrl = result.objectUrl;
+      if (result.warning) {
+        setGenerateWarning(result.warning);
+      }
       const a = document.createElement("a");
       a.href = objectUrl;
       a.download = "presentation.pptx";
@@ -186,6 +192,24 @@ export function PPTPanel() {
                 {PRESENTATION_STYLE.map((opt) => (
                   <option key={opt} value={opt} className="bg-[#1e1f20]">
                     {opt.replace(/_/g, " ")}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className={labelClass} htmlFor="ppt-layout">
+                Slide layout
+              </label>
+              <select
+                id="ppt-layout"
+                className={fieldClass}
+                value={user_response.layout}
+                onChange={(e) => setField("layout", e.target.value)}
+              >
+                {LAYOUTS.map((opt) => (
+                  <option key={opt} value={opt} className="bg-[#1e1f20]">
+                    {opt.charAt(0).toUpperCase() + opt.slice(1)}
                   </option>
                 ))}
               </select>
@@ -288,7 +312,11 @@ export function PPTPanel() {
               onClick={handleGenerate}
               disabled={isGenerating}
               aria-busy={isGenerating}
-              aria-label={isGenerating ? "Generating presentation outline" : "Generate presentation outline"}
+              aria-label={
+                isGenerating
+                  ? "Generating presentation"
+                  : "Generate and download presentation"
+              }
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[#8ab4f8] px-4 py-3 text-sm font-semibold text-[#202124] transition hover:bg-[#a8c7fa] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isGenerating ? (
@@ -297,23 +325,18 @@ export function PPTPanel() {
                   Generating…
                 </>
               ) : (
-                "Generate"
+                "Download .pptx"
               )}
             </button>
+            {generateWarning && (
+              <p className="mt-2 text-sm text-yellow-300" role="status">
+                {generateWarning}
+              </p>
+            )}
             {generateError && (
               <p className="mt-2 text-sm text-red-400" role="alert">
                 {generateError}
               </p>
-            )}
-            {outline && (
-              <div className="mt-4 rounded-lg border border-[#3c4043] bg-[#131314] p-4">
-                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[#9aa0a6]">
-                  Outline
-                </p>
-                <div className="text-sm leading-relaxed text-[#bdc1c6]">
-                  <ReactMarkdown>{outline}</ReactMarkdown>
-                </div>
-              </div>
             )}
           </div>
         </form>
