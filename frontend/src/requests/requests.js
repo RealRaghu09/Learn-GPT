@@ -12,8 +12,12 @@ export async function generateStructured({ content }) {
     const errText = await res.text().catch(() => "");
     throw new Error(errText || `HTTP error! status: ${res.status}`);
   }
+  const warning = res.headers.get("X-Learnly-Warning");
   const blob = await res.blob();
-  return window.URL.createObjectURL(blob);
+  return {
+    objectUrl: window.URL.createObjectURL(blob),
+    warning,
+  };
 }
 
 export async function sendChatMessage({ question, context }) {
